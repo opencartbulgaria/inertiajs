@@ -47,3 +47,4 @@
 
 /upload/vendor/*
 /upload/node_modules/*
+/upload/catalog/view/javascript/dist
