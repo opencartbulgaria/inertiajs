@@ -6,7 +6,7 @@ $autoloader->register('Opencart\Extension', DIR_EXTENSION);
 $autoloader->register('Opencart\System', DIR_SYSTEM);
 
 // Vendor
-if (is_file('../vendor/autoload.php')) {
+if (is_file('vendor/autoload.php')) {
 	require_once(DIR_OPENCART . 'vendor/autoload.php');
 } else {
 	header('Location: ../error.html');
@@ -34,6 +34,10 @@ date_default_timezone_set($config->get('date_timezone'));
 // Logging
 $log = new \Opencart\System\Library\Log($config->get('error_filename'));
 $registry->set('log', $log);
+
+// Inertia
+$inertia = new \Opencart\System\Library\Inertia($registry);
+$registry->set('inertia', $inertia);
 
 // Error Handler
 set_error_handler(function(int $code, string $message, string $file, int $line) use ($log, $config) {

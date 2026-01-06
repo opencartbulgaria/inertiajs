@@ -46,3 +46,4 @@
 /.php-cs-fixer.cache
 
 /upload/vendor/*
+/upload/node_modules/*
