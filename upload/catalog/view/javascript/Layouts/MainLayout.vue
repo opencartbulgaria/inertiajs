@@ -7,7 +7,7 @@
 					<!-- Logo -->
 					<div class="flex items-center">
 						<Link href="/" class="text-2xl font-bold text-gray-900 hover:text-blue-600 transition">
-							{{ storeName }}
+							<img :src="header.logo" :alt="header.name" />
 						</Link>
 					</div>
 
@@ -32,7 +32,7 @@
 
 					<!-- Nav Icons -->
 					<div class="flex items-center space-x-4">
-						<Link href="/account" class="p-2 text-gray-600 hover:text-gray-900 relative">
+						<Link :href="header.login" class="p-2 text-gray-600 hover:text-gray-900 relative">
 							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 							</svg>
@@ -98,7 +98,7 @@
 				<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
 					<!-- About -->
 					<div>
-						<h3 class="text-white text-lg font-semibold mb-4">{{ storeName }}</h3>
+						<h3 class="text-white text-lg font-semibold mb-4">{{ header.name }}</h3>
 						<p class="text-sm text-gray-400">
 							Вашият надежден онлайн магазин за електроника и технология.
 						</p>
@@ -165,7 +165,7 @@
 				</div>
 
 				<div class="border-t border-gray-800 mt-8 pt-8 text-sm text-center text-gray-400">
-					<p>&copy; 2026 {{ storeName }}. Всички права запазени.</p>
+					<p>&copy; 2026 {{ header.name }}. Всички права запазени.</p>
 				</div>
 			</div>
 		</footer>
@@ -177,9 +177,9 @@ import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
-	storeName: {
-		type: String,
-		default: 'OpenCart'
+	header: {
+		type: Array,
+		default: []
 	},
 	cartCount: {
 		type: Number,

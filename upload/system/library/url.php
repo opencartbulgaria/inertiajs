@@ -9,11 +9,13 @@
  *
  * @see       https://www.opencart.com
  */
+
 namespace Opencart\System\Library;
 /**
  * Class URL
  */
-class Url {
+class Url
+{
 	/**
 	 * @var string
 	 */
@@ -28,7 +30,8 @@ class Url {
 	 *
 	 * @param string $url
 	 */
-	public function __construct(string $url) {
+	public function __construct(string $url)
+	{
 		$this->url = $url;
 	}
 
@@ -41,7 +44,8 @@ class Url {
 	 *
 	 * @return void
 	 */
-	public function addRewrite(object $rewrite): void {
+	public function addRewrite(object $rewrite): void
+	{
 		if (is_callable([$rewrite, 'rewrite'])) {
 			$this->rewrite[] = $rewrite;
 		}
@@ -53,12 +57,13 @@ class Url {
 	 * Generates a URL
 	 *
 	 * @param string $route
-	 * @param mixed  $args
-	 * @param bool   $js
+	 * @param mixed $args
+	 * @param bool $js
 	 *
 	 * @return string
 	 */
-	public function link(string $route, $args = '', bool $js = false): string {
+	public function link(string $route, $args = '', bool $js = false): string
+	{
 		$url = $this->url . 'index.php?route=' . $route;
 
 		if ($args) {
@@ -77,10 +82,15 @@ class Url {
 		// https://github.com/opencart/opencart/issues/14202
 		$url = str_replace('%3F', '?', $url);
 
+		// In standard HTML contexts OpenCart escapes & as &amp;.
 		if (!$js) {
-			return str_replace('&', '&amp;', $url);
-		} else {
-			return $url;
+			return html_entity_decode(
+				$url,
+				ENT_QUOTES,
+				'UTF-8'
+			);
 		}
+
+		return $url;
 	}
 }

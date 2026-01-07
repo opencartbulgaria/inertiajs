@@ -7,6 +7,11 @@ export default defineConfig({
 		vue(),
 		tailwindcss(),
 	],
+	resolve: {
+		alias: {
+			'@': '/catalog/view/javascript',
+		},
+	},
 	build: {
 		outDir: 'catalog/view/javascript/dist',
 		emptyOutDir: true,
@@ -16,14 +21,19 @@ export default defineConfig({
 		},
 	},
 	server: {
-		host: '0.0.0.0',
+		host: true,
 		port: 5173,
 		strictPort: true,
-		cors: true,
-		origin: 'http://localhost:5173',
+		cors: {
+			origin: '*',
+			credentials: true,
+		},
 		hmr: {
-			host: 'localhost',
-			protocol: 'ws',
+			host: '127.0.0.1',
+			clientPort: 5173,
+		},
+		watch: {
+			usePolling: true,
 		},
 	},
 });

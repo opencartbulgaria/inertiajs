@@ -35,7 +35,7 @@ class Inertia
 	/**
 	 * Share data across all Inertia responses
 	 */
-	public function share($key, $value = null)
+	public function share($key, $value = null): static
 	{
 		if (is_array($key)) {
 			$this->shared_data = array_merge($this->shared_data, $key);
@@ -48,7 +48,7 @@ class Inertia
 	/**
 	 * Render an Inertia response
 	 */
-	public function render($component, $props = [])
+	public function render($component, $props = []): bool|string
 	{
 		// Merge shared data with props
 		$all_props = array_merge($this->shared_data, $props);
@@ -73,7 +73,7 @@ class Inertia
 	/**
 	 * Check if current request is an Inertia request
 	 */
-	private function isInertiaRequest()
+	private function isInertiaRequest(): bool
 	{
 		return isset($this->registry->get('request')->server['HTTP_X_INERTIA']) &&
 			$this->registry->get('request')->server['HTTP_X_INERTIA'] === 'true';
@@ -82,7 +82,7 @@ class Inertia
 	/**
 	 * Send JSON response for Inertia requests
 	 */
-	private function sendInertiaResponse($page)
+	private function sendInertiaResponse($page): bool|string
 	{
 		header('Content-Type: application/json');
 		header('X-Inertia: true');
@@ -94,7 +94,7 @@ class Inertia
 	/**
 	 * Send HTML response for initial page load
 	 */
-	private function sendHtmlResponse($page)
+	private function sendHtmlResponse($page): string
 	{
 		$html = '<!DOCTYPE html>
 <html lang="bg">
@@ -124,61 +124,83 @@ class Inertia
 	/**
 	 * Get app version for cache busting
 	 */
-	private function getVersion()
+	private function getVersion(): string
 	{
 		return '1.0.0';
 	}
 
-	/**
-	 * Get Vite assets (dev or production)
-	 */
-	private function getViteAssets()
+	private function getViteAssets(): string
 	{
-		$is_dev = $this->isDevelopment();
-
-		if ($is_dev) {
-			// Development - use Vite dev server
-			return '
-    <script type="module" src="http://localhost:5173/@vite/client"></script>
-    <script type="module" src="http://localhost:5173/catalog/view/javascript/app.js"></script>';
-		}
-
-		// Production - use built assets
-		return $this->getProductionAssets();
-	}
-
-	/**
-	 * Check if we're in development mode
-	 */
-	private function isDevelopment()
-	{
-		// Check if Vite dev server is running by looking for manifest
 		$manifest_path = DIR_APPLICATION . 'view/javascript/dist/.vite/manifest.json';
 
-		// If manifest doesn't exist, assume dev mode
-		return !file_exists($manifest_path);
+		// If Vite dev server is running, prefer dev assets (even if a manifest exists)
+		if ($this->isViteDevServerRunning()) {
+			// Development mode - use Vite dev server
+			$vite_host = 'http://127.0.0.1:5173';
+
+			return '<script type="module" crossorigin src="' . $vite_host . '/@vite/client"></script>
+    <script type="module" crossorigin src="' . $vite_host . '/catalog/view/javascript/app.js"></script>';
+		}
+
+		// Otherwise, use production build if present
+		if (file_exists($manifest_path)) {
+			return $this->getProductionAssets();
+		}
+
+		// No dev server and no build
+		return '<!-- ERROR: No Vite dev server and no build manifest. Run: npm run dev or npm run build -->';
+	}
+
+
+	/**
+	 * Check if Vite dev server is running
+	 */
+	/**
+	 * Check if Vite dev server is running
+	 */
+	private function isViteDevServerRunning(): bool
+	{
+		$errno = 0;
+		$error = '';
+
+		// Some environments (incl. OpenCart) may have a custom error handler that still
+		// surfaces warnings even when using @. Temporarily swallow warnings for this probe.
+		$prevHandler = set_error_handler(function () {
+			return true;
+		});
+
+		try {
+			$socket = fsockopen('127.0.0.1', 5173, $errno, $error, 0.2);
+		} finally {
+			restore_error_handler();
+			// If there was a previous handler, restore_error_handler() already restored it.
+			// $prevHandler is kept only to avoid unused-variable notices in older setups.
+			unset($prevHandler);
+		}
+
+		if (is_resource($socket)) {
+			fclose($socket);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Get production asset tags
 	 */
-	private function getProductionAssets()
+	private function getProductionAssets(): string
 	{
 		$manifest_path = DIR_APPLICATION . 'view/javascript/dist/.vite/manifest.json';
-
-		if (!file_exists($manifest_path)) {
-			return '<!-- Production assets not built. Run: npm run build -->';
-		}
 
 		$manifest = json_decode(file_get_contents($manifest_path), true);
 
 		if (!$manifest || !isset($manifest['catalog/view/javascript/app.js'])) {
-			return '<!-- Invalid manifest file -->';
+			return '<!-- ERROR: Invalid manifest file. Please run: npm run build -->';
 		}
 
 		$entry = $manifest['catalog/view/javascript/app.js'];
-
-		$html = '';
+		$html  = '';
 
 		// Add CSS files
 		if (isset($entry['css'])) {

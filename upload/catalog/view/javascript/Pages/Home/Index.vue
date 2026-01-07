@@ -1,7 +1,6 @@
 <template>
-	<MainLayout :store-name="store_name">
-		<!-- Hero Section -->
-		<section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+	<MainLayout :store-name="store_name" :header="header">
+		<section class="bg-linear-to-r from-blue-600 to-blue-800 text-white">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 				<div class="text-center">
 					<h1 class="text-4xl md:text-5xl font-bold mb-4">
@@ -107,8 +106,6 @@ import MainLayout from '../../Layouts/MainLayout.vue';
 import ProductCard from '../../Components/ProductCard.vue';
 
 defineProps({
-	store_name: String,
-	product_count: Number,
-	products: Array
+	header: [Object, Array]
 });
 </script>

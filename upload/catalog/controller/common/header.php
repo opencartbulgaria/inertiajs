@@ -11,9 +11,9 @@ class Header extends \Opencart\System\Engine\Controller {
 	/**
 	 * Index
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public function index(): string {
+	public function index(): array {
 		// Analytics
 		$data['analytics'] = [];
 
@@ -37,14 +37,6 @@ class Header extends \Opencart\System\Engine\Controller {
 		$data['base'] = $this->config->get('config_url');
 		$data['description'] = $this->document->getDescription();
 		$data['keywords'] = $this->document->getKeywords();
-
-		// Hard coding css, so they can be replaced via the event's system.
-		$data['bootstrap'] = 'catalog/view/stylesheet/bootstrap.css';
-		$data['icons'] = 'catalog/view/stylesheet/fonts/fontawesome/css/all.min.css';
-		$data['stylesheet'] = 'catalog/view/stylesheet/stylesheet.css';
-
-		// Hard coding scripts, so they can be replaced via the event's system.
-		$data['jquery'] = 'catalog/view/javascript/jquery/jquery-3.7.1.min.js';
 
 		$data['links'] = $this->document->getLinks();
 		$data['styles'] = $this->document->getStyles();
@@ -80,6 +72,8 @@ class Header extends \Opencart\System\Engine\Controller {
 		$data['wishlist'] = $this->url->link('account/wishlist', 'language=' . $this->config->get('config_language') . (isset($this->session->data['customer_token']) ? '&customer_token=' . $this->session->data['customer_token'] : ''));
 		$data['logged'] = $this->customer->isLogged();
 
+		$data['login'] = $this->url->link('account/login', 'language=' . $this->config->get('config_language'), '', true);
+
 		if (!$this->customer->isLogged()) {
 			$data['register'] = $this->url->link('account/register', 'language=' . $this->config->get('config_language'));
 			$data['login'] = $this->url->link('account/login', 'language=' . $this->config->get('config_language'));
@@ -96,12 +90,12 @@ class Header extends \Opencart\System\Engine\Controller {
 		$data['contact'] = $this->url->link('information/contact', 'language=' . $this->config->get('config_language'));
 		$data['telephone'] = $this->config->get('config_telephone');
 
-		$data['language'] = $this->load->controller('common/language');
-		$data['currency'] = $this->load->controller('common/currency');
-		$data['search'] = $this->load->controller('common/search');
-		$data['cart'] = $this->load->controller('common/cart');
-		$data['menu'] = $this->load->controller('common/menu');
+//		$data['language'] = $this->load->controller('common/language');
+//		$data['currency'] = $this->load->controller('common/currency');
+//		$data['search'] = $this->load->controller('common/search');
+//		$data['cart'] = $this->load->controller('common/cart');
+//		$data['menu'] = $this->load->controller('common/menu');
 
-		return $this->load->view('common/header', $data);
+		return $data;
 	}
 }
