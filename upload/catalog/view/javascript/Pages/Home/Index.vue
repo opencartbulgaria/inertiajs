@@ -1,10 +1,10 @@
 <template>
-	<MainLayout :store-name="store_name" :header="header">
+	<MainLayout :header="header" :language="language">
 		<section class="bg-linear-to-r from-blue-600 to-blue-800 text-white">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 				<div class="text-center">
 					<h1 class="text-4xl md:text-5xl font-bold mb-4">
-						Добре дошли в {{ store_name }}
+						Добре дошли в {{ meta_title }}
 					</h1>
 					<p class="text-xl text-blue-100 mb-8">
 						Открийте най-добрите технологични продукти на най-добри цени
@@ -106,6 +106,7 @@ import MainLayout from '../../Layouts/MainLayout.vue';
 import ProductCard from '../../Components/ProductCard.vue';
 
 defineProps({
-	header: [Object, Array]
+	header: [Object, Array],
+	language: [Object, Array]
 });
 </script>

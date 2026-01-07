@@ -9,8 +9,9 @@
  * @see           https://opencartbulgaria.com
  */
 
-namespace Opencart\System\Library;
+namespace Opencart\System\Library\Inertia;
 
+use Opencart\System\Engine\Config;
 use Opencart\System\Engine\Registry;
 
 class Inertia
@@ -20,16 +21,27 @@ class Inertia
 	 */
 	private Registry $registry;
 	/**
+	 * @var Config
+	 */
+	private Config $config;
+	/**
 	 * @var array
 	 */
 	private array $shared_data = [];
 
-	/**
-	 * Constructor
-	 */
-	public function __construct(Registry $registry)
+	public function __construct($registry)
 	{
 		$this->registry = $registry;
+		$this->loadSharedData();
+	}
+
+	/**
+	 * Load shared data
+	 */
+	private function loadSharedData(): void
+	{
+		$provider          = new SharedProvider($this->registry);
+		$this->shared_data = $provider->getData();
 	}
 
 	/**

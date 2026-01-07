@@ -13,7 +13,7 @@ class Language extends \Opencart\System\Engine\Controller {
 	 *
 	 * @return string
 	 */
-	public function index(): string {
+	public function index(): array {
 		$this->load->language('common/language');
 
 		$data['action'] = $this->url->link('common/language.save', 'language=' . $this->config->get('config_language'));
@@ -59,7 +59,7 @@ class Language extends \Opencart\System\Engine\Controller {
 		// Make sure we are not using SEO urls
 		$data['redirect'] = HTTP_SERVER . 'index.php?route=' . $route . $url;
 
-		return $this->load->view('common/language', $data);
+		return $data;
 	}
 
 	/**

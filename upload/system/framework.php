@@ -177,7 +177,7 @@ if ($config->get('session_autostart')) {
 $registry->set('cache', new \Opencart\System\Library\Cache($config->get('cache_engine'), $config->get('cache_expire')));
 
 // Inertia
-$inertia = new \Opencart\System\Library\Inertia($registry);
+$inertia = new \Opencart\System\Library\Inertia\Inertia($registry);
 $registry->set('inertia', $inertia);
 
 // Template

@@ -90,7 +90,7 @@ class Header extends \Opencart\System\Engine\Controller {
 		$data['contact'] = $this->url->link('information/contact', 'language=' . $this->config->get('config_language'));
 		$data['telephone'] = $this->config->get('config_telephone');
 
-//		$data['language'] = $this->load->controller('common/language');
+		$data['language'] = $this->load->controller('common/language');
 //		$data['currency'] = $this->load->controller('common/currency');
 //		$data['search'] = $this->load->controller('common/search');
 //		$data['cart'] = $this->load->controller('common/cart');

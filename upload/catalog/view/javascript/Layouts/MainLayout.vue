@@ -5,13 +5,21 @@
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="flex justify-between items-center h-16">
 					<!-- Logo -->
-					<div class="flex items-center">
-						<Link href="/" class="text-2xl font-bold text-gray-900 hover:text-blue-600 transition">
-							<img :src="header.logo" :alt="header.name" />
+					<div class="flex items-center space-x-8">
+						<Link :href="safeUrls.home" class="flex items-center">
+							<img
+								v-if="logo"
+								:src="logo"
+								:alt="storeName"
+								class="h-10 w-auto"
+							/>
+							<span v-else class="text-2xl font-bold text-gray-900 hover:text-blue-600 transition">
+                {{ storeName }}
+              </span>
 						</Link>
 					</div>
 
-					<!-- Search Bar -->
+					<!-- Search Bar - Desktop -->
 					<div class="hidden md:flex flex-1 max-w-2xl mx-8">
 						<form @submit.prevent="handleSearch" class="w-full">
 							<div class="relative">
@@ -21,7 +29,10 @@
 									placeholder="Търсене на продукти..."
 									class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								/>
-								<button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+								<button
+									type="submit"
+									class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition"
+								>
 									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 									</svg>
@@ -31,21 +42,77 @@
 					</div>
 
 					<!-- Nav Icons -->
-					<div class="flex items-center space-x-4">
-						<Link :href="header.login" class="p-2 text-gray-600 hover:text-gray-900 relative">
-							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-							</svg>
-						</Link>
-						<button @click="toggleWishlist" class="p-2 text-gray-600 hover:text-gray-900 relative">
+					<div class="flex items-center space-x-2">
+						<!-- Language Switcher -->
+						<LanguageSwitcher
+							v-if="languages && languages.length > 1"
+							:languages="languages"
+							:current-language-code="currentLanguage"
+						/>
+
+						<!-- Account Dropdown -->
+						<div class="relative" ref="accountDropdown">
+							<button
+								@click="isAccountOpen = !isAccountOpen"
+								class="p-2 text-gray-600 hover:text-gray-900 relative rounded-lg hover:bg-gray-100 transition"
+							>
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+								</svg>
+							</button>
+
+							<!-- Account Dropdown Menu -->
+							<transition
+								enter-active-class="transition duration-200 ease-out"
+								enter-from-class="opacity-0 translate-y-1"
+								enter-to-class="opacity-100 translate-y-0"
+								leave-active-class="transition duration-150 ease-in"
+								leave-from-class="opacity-100 translate-y-0"
+								leave-to-class="opacity-0 translate-y-1"
+							>
+								<div
+									v-if="isAccountOpen"
+									class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+								>
+									<template v-if="user.logged">
+										<div class="px-4 py-2 border-b border-gray-200">
+											<p class="text-sm font-semibold text-gray-900">{{ user.name }}</p>
+											<p class="text-xs text-gray-500">{{ user.email }}</p>
+										</div>
+										<Link :href="safeUrls.account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+											Моят акаунт
+										</Link>
+										<Link :href="safeUrls.orders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+											Моите поръчки
+										</Link>
+										<Link :href="safeUrls.logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t border-gray-200">
+											Изход
+										</Link>
+									</template>
+									<template v-else>
+										<Link :href="safeUrls.login" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+											Вход
+										</Link>
+										<Link :href="safeUrls.register" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+											Регистрация
+										</Link>
+									</template>
+								</div>
+							</transition>
+						</div>
+
+						<!-- Wishlist -->
+						<Link :href="safeUrls.wishlist" class="p-2 text-gray-600 hover:text-gray-900 relative rounded-lg hover:bg-gray-100 transition">
 							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
 							</svg>
 							<span v-if="wishlistCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {{ wishlistCount }}
               </span>
-						</button>
-						<Link href="/cart" class="p-2 text-gray-600 hover:text-gray-900 relative">
+						</Link>
+
+						<!-- Cart -->
+						<Link :href="safeUrls.cart" class="p-2 text-gray-600 hover:text-gray-900 relative rounded-lg hover:bg-gray-100 transition">
 							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
 							</svg>
@@ -59,12 +126,19 @@
 				<!-- Mobile Search -->
 				<div class="md:hidden pb-3">
 					<form @submit.prevent="handleSearch">
-						<input
-							v-model="searchQuery"
-							type="text"
-							placeholder="Търсене..."
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-						/>
+						<div class="relative">
+							<input
+								v-model="searchQuery"
+								type="text"
+								placeholder="Търсене..."
+								class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+							/>
+							<button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2">
+								<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+								</svg>
+							</button>
+						</div>
 					</form>
 				</div>
 			</div>
@@ -78,8 +152,8 @@
 						v-for="category in categories"
 						:key="category.id"
 						:href="category.href"
-						class="text-gray-700 hover:text-blue-600 whitespace-nowrap transition"
-						:class="{ 'font-bold text-blue-600': category.active }"
+						class="text-gray-700 hover:text-blue-600 whitespace-nowrap transition font-medium"
+						:class="{ 'text-blue-600': category.active }"
 					>
 						{{ category.name }}
 					</Link>
@@ -98,37 +172,20 @@
 				<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
 					<!-- About -->
 					<div>
-						<h3 class="text-white text-lg font-semibold mb-4">{{ header.name }}</h3>
+						<h3 class="text-white text-lg font-semibold mb-4">{{ storeName }}</h3>
 						<p class="text-sm text-gray-400">
 							Вашият надежден онлайн магазин за електроника и технология.
 						</p>
-						<div class="flex space-x-4 mt-4">
-							<a href="#" class="text-gray-400 hover:text-white">
-								<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-									<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-								</svg>
-							</a>
-							<a href="#" class="text-gray-400 hover:text-white">
-								<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-									<path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-								</svg>
-							</a>
-							<a href="#" class="text-gray-400 hover:text-white">
-								<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-									<path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
-								</svg>
-							</a>
-						</div>
 					</div>
 
 					<!-- Quick Links -->
 					<div>
 						<h3 class="text-white text-lg font-semibold mb-4">Бързи връзки</h3>
 						<ul class="space-y-2 text-sm">
-							<li><Link href="/about" class="hover:text-white">За нас</Link></li>
-							<li><Link href="/contact" class="hover:text-white">Контакти</Link></li>
-							<li><Link href="/delivery" class="hover:text-white">Доставка</Link></li>
-							<li><Link href="/returns" class="hover:text-white">Връщане</Link></li>
+							<li><a href="#" class="hover:text-white">За нас</a></li>
+							<li><Link :href="safeUrls.contact" class="hover:text-white">Контакти</Link></li>
+							<li><a href="#" class="hover:text-white">Доставка</a></li>
+							<li><a href="#" class="hover:text-white">Връщане</a></li>
 						</ul>
 					</div>
 
@@ -136,10 +193,9 @@
 					<div>
 						<h3 class="text-white text-lg font-semibold mb-4">Обслужване</h3>
 						<ul class="space-y-2 text-sm">
-							<li><Link href="/account" class="hover:text-white">Моят акаунт</Link></li>
-							<li><Link href="/orders" class="hover:text-white">История на поръчки</Link></li>
-							<li><Link href="/wishlist" class="hover:text-white">Списък желания</Link></li>
-							<li><Link href="/newsletter" class="hover:text-white">Новини</Link></li>
+							<li><Link :href="safeUrls.account" class="hover:text-white">Моят акаунт</Link></li>
+							<li><Link :href="safeUrls.orders" class="hover:text-white" v-if="user.logged">История на поръчки</Link></li>
+							<li><Link :href="safeUrls.wishlist" class="hover:text-white">Списък желания</Link></li>
 						</ul>
 					</div>
 
@@ -165,7 +221,7 @@
 				</div>
 
 				<div class="border-t border-gray-800 mt-8 pt-8 text-sm text-center text-gray-400">
-					<p>&copy; 2026 {{ header.name }}. Всички права запазени.</p>
+					<p>&copy; 2026 {{ storeName }}. Всички права запазени.</p>
 				</div>
 			</div>
 		</footer>
@@ -173,13 +229,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { Link, router } from '@inertiajs/vue3';
+import LanguageSwitcher from '../Components/LanguageSwitcher.vue';
 
 const props = defineProps({
-	header: {
-		type: Array,
-		default: []
+	storeName: {
+		type: String,
+		default: 'OpenCart'
+	},
+	logo: {
+		type: String,
+		default: ''
 	},
 	cartCount: {
 		type: Number,
@@ -191,23 +252,46 @@ const props = defineProps({
 	},
 	categories: {
 		type: Array,
-		default: () => [
-			{ id: 1, name: 'Начало', href: '/', active: true },
-			{ id: 2, name: 'Електроника', href: '/category/electronics', active: false },
-			{ id: 3, name: 'Компютри', href: '/category/computers', active: false },
-			{ id: 4, name: 'Телефони', href: '/category/phones', active: false },
-			{ id: 5, name: 'Камери', href: '/category/cameras', active: false },
-		]
-	}
+		default: () => []
+	},
+	languages: {
+		type: Array,
+		default: () => []
+	},
+	currentLanguage: {
+		type: String,
+		default: 'bg'
+	},
+	user: {
+		type: Object,
+		default: () => ({ logged: false })
+	},
+	safeUrls: {
+		type: Object,
+		default: () => ({
+			home: '/',
+			cart: '/index.php?route=checkout/cart',
+			checkout: '/index.php?route=checkout/checkout',
+			search: '/index.php?route=product/search',
+			contact: '/index.php?route=information/contact',
+			login: '/index.php?route=account/login',
+			register: '/index.php?route=account/register',
+			wishlist: '/index.php?route=account/wishlist',
+			account: '/index.php?route=account/account',
+			orders: '/index.php?route=account/order',
+			logout: '/index.php?route=account/logout',
+		})
+	},
 });
 
 const searchQuery = ref('');
 const newsletterEmail = ref('');
+const isAccountOpen = ref(false);
+const accountDropdown = ref(null);
 
 const handleSearch = () => {
 	if (searchQuery.value.trim()) {
-		// Inertia visit to search page
-		console.log('Searching for:', searchQuery.value);
+		router.visit(props.safeUrls.search + '&search=' + encodeURIComponent(searchQuery.value));
 	}
 };
 
@@ -218,7 +302,18 @@ const handleNewsletter = () => {
 	}
 };
 
-const toggleWishlist = () => {
-	console.log('Toggle wishlist');
+// Close account dropdown when clicking outside
+const handleClickOutside = (event) => {
+	if (accountDropdown.value && !accountDropdown.value.contains(event.target)) {
+		isAccountOpen.value = false;
+	}
 };
+
+onMounted(() => {
+	document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+	document.removeEventListener('click', handleClickOutside);
+});
 </script>
