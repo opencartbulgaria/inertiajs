@@ -1,15 +1,42 @@
 <?php
+/**
+ * @package        OpenCart Bulgaria
+ *
+ * @author         Pavel Palashturov
+ * @copyright      Copyright (c) 2020 - 2026, OpenCart Bulgaria, Ltd. (https://opencartbulgaria.com/)
+ * @license        https://opensource.org/licenses/GPL-3.0
+ *
+ * @see           https://opencartbulgaria.com
+ */
+
 namespace Opencart\System\Library;
 
-class Inertia {
-	private $registry;
-	private $shared_data = [];
+use Opencart\System\Engine\Registry;
 
-	public function __construct($registry) {
+class Inertia
+{
+	/**
+	 * @var Registry
+	 */
+	private Registry $registry;
+	/**
+	 * @var array
+	 */
+	private array    $shared_data = [];
+
+	/**
+	 * Constructor
+	 */
+	public function __construct(Registry $registry)
+	{
 		$this->registry = $registry;
 	}
 
-	public function share($key, $value = null) {
+	/**
+	 *
+	 */
+	public function share($key, $value = null): static
+	{
 		if (is_array($key)) {
 			$this->shared_data = array_merge($this->shared_data, $key);
 		} else {
@@ -18,14 +45,18 @@ class Inertia {
 		return $this;
 	}
 
-	public function render($component, $props = []) {
+	/**
+	 *
+	 */
+	public function render($component, $props = [])
+	{
 		$all_props = array_merge($this->shared_data, $props);
 
 		$page = [
 			'component' => $component,
-			'props' => $all_props,
-			'url' => $this->registry->get('request')->server['REQUEST_URI'] ?? '/',
-			'version' => '1.0'
+			'props'     => $all_props,
+			'url'       => $this->registry->get('request')->server['REQUEST_URI'] ?? '/',
+			'version'   => '1.0'
 		];
 
 		// Проверка дали е Inertia заявка
@@ -42,8 +73,12 @@ class Inertia {
 		return $this->renderHtml($page);
 	}
 
-	private function renderHtml($page) {
-		$html = '<!DOCTYPE html>
+	/**
+	 * Render HTML layout
+	 */
+	private function renderHtml($page): string
+	{
+		return '<!DOCTYPE html>
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
@@ -55,11 +90,13 @@ class Inertia {
     <div id="app" data-page="' . htmlspecialchars(json_encode($page)) . '"></div>
 </body>
 </html>';
-
-		return $html;
 	}
 
-	private function getViteAssets() {
+	/**
+	 *
+	 */
+	private function getViteAssets(): string
+	{
 		// За development
 		if (file_exists(DIR_APPLICATION . '../vite.config.js') &&
 			!file_exists(DIR_APPLICATION . 'view/javascript/dist/manifest.json')) {
@@ -72,7 +109,7 @@ class Inertia {
 		if (file_exists($manifest_path)) {
 			$manifest = json_decode(file_get_contents($manifest_path), true);
 
-			$js_file = $manifest['catalog/view/javascript/app.js']['file'] ?? '';
+			$js_file   = $manifest['catalog/view/javascript/app.js']['file'] ?? '';
 			$css_files = $manifest['catalog/view/javascript/app.js']['css'] ?? [];
 
 			$html = '';
