@@ -6,12 +6,7 @@ $autoloader->register('Opencart\Extension', DIR_EXTENSION);
 $autoloader->register('Opencart\System', DIR_SYSTEM);
 
 // Vendor
-if (is_file('vendor/autoload.php')) {
-	require_once(DIR_OPENCART . 'vendor/autoload.php');
-} else {
-	header('Location: ../error.html');
-	exit();
-}
+require_once(DIR_OPENCART . 'vendor/autoload.php');
 
 // Registry
 $registry = new \Opencart\System\Engine\Registry();

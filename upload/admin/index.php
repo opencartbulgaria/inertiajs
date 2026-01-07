@@ -2,6 +2,11 @@
 // Version
 define('VERSION', '4.1.0.3');
 
+if (!is_file('../vendor/autoload.php')) {
+	header('Location: ../error.html');
+	exit();
+}
+
 // Configuration
 if (is_file('config.php')) {
 	require_once('config.php');
