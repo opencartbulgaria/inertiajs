@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="{{ language.code|default('bg') }}" dir="{{ language.direction|default('ltr') }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.props.meta_title|default('OpenCart Bulgaria') }}</title>
+  {% if meta_description %}
+    <meta name="description" content="{{ meta_description }}">
+  {% endif %}
+  {% if meta_keywords %}
+    <meta name="keywords" content="{{ meta_keywords }}">
+  {% endif %}
+  {% if page.props.icon %}
+    <link rel="icon" href="{{ page.props.icon }}">
+  {% endif %}
+  {{ vite_assets|raw }}
+</head>
+<body>
+<div id="app" data-page="{{ page_json }}"></div>
+</body>
+</html>

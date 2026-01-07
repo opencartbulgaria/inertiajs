@@ -24,13 +24,15 @@ class Home extends \Opencart\System\Engine\Controller
 		$description = $this->config->get('config_description');
 		$language_id = $this->config->get('config_language_id');
 
+		$data['language'] = ['code' => $this->config->get('config_language_catalog'), 'direction' => 'ltr'];
+
 		if (isset($description[$language_id])) {
-			$this->document->setTitle($description[$language_id]['meta_title']);
-			$this->document->setDescription($description[$language_id]['meta_description']);
-			$this->document->setKeywords($description[$language_id]['meta_keyword']);
+			$data['meta_title']       = $description[$language_id]['meta_title'];
+			$data['meta_description'] = $description[$language_id]['meta_description'];
+			$data['meta_keyword']     = $description[$language_id]['meta_keyword'];
 		}
 
-		$data['header']         = $this->load->controller('common/header');
+		$data['header'] = $this->load->controller('common/header');
 
 //		$data['column_left']    = $this->load->controller('common/column_left');
 //		$data['column_right']   = $this->load->controller('common/column_right');

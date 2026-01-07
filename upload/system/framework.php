@@ -30,10 +30,6 @@ date_default_timezone_set($config->get('date_timezone'));
 $log = new \Opencart\System\Library\Log($config->get('error_filename'));
 $registry->set('log', $log);
 
-// Inertia
-$inertia = new \Opencart\System\Library\Inertia($registry);
-$registry->set('inertia', $inertia);
-
 // Error Handler
 set_error_handler(function(int $code, string $message, string $file, int $line) use ($log, $config) {
 	switch ($code) {
@@ -179,6 +175,10 @@ if ($config->get('session_autostart')) {
 
 // Cache
 $registry->set('cache', new \Opencart\System\Library\Cache($config->get('cache_engine'), $config->get('cache_expire')));
+
+// Inertia
+$inertia = new \Opencart\System\Library\Inertia($registry);
+$registry->set('inertia', $inertia);
 
 // Template
 $template = new \Opencart\System\Library\Template($config->get('template_engine'));

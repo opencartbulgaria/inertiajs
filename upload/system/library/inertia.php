@@ -94,22 +94,49 @@ class Inertia
 	/**
 	 * Send HTML response for initial page load
 	 */
-	private function sendHtmlResponse($page): string
+	private function sendHtmlResponse($page)
 	{
-		$html = '<!DOCTYPE html>
+		// Add metadata to the data array (not to page props)
+		$data = [
+			'page'             => $page,
+			'page_json'        => htmlspecialchars(json_encode($page), ENT_QUOTES, 'UTF-8'),
+			'vite_assets'      => $this->getViteAssets(),
+			'language'         => $page['props']['language'] ?? ['code' => 'bg', 'direction' => 'ltr'],
+			'meta_title'       => $page['props']['meta_title'] ?? '',
+			'meta_description' => $page['props']['meta_description'] ?? '',
+			'meta_keywords'    => $page['props']['meta_keywords'] ?? '',
+		];
+
+		// Load Twig template
+		try {
+			$loader = $this->registry->get('load');
+			return $loader->view('app', $data);
+		} catch (\Exception $e) {
+			return $this->getFallbackHtml($page);
+		}
+	}
+
+	/**
+	 * Fallback HTML if Twig template is not available
+	 */
+	private function getFallbackHtml($page): string
+	{
+		$page_json   = htmlspecialchars(json_encode($page), ENT_QUOTES, 'UTF-8');
+		$meta_title  = htmlspecialchars($page['props']['meta_title'] ?? 'OpenCart');
+		$vite_assets = $this->getViteAssets();
+
+		return '<!DOCTYPE html>
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>' . htmlspecialchars($page['props']['store_name'] ?? 'OpenCart') . '</title>
-    ' . $this->getViteAssets() . '
+    <title>' . $meta_title . '</title>
+    ' . $vite_assets . '
 </head>
 <body>
-    <div id="app" data-page="' . htmlspecialchars(json_encode($page), ENT_QUOTES, 'UTF-8') . '"></div>
+    <div id="app" data-page="' . $page_json . '"></div>
 </body>
 </html>';
-
-		return $html;
 	}
 
 	/**
