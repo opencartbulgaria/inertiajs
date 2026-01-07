@@ -14,41 +14,22 @@ class Home extends \Opencart\System\Engine\Controller {
 	 * @return void
 	 */
 	public function index(): void {
-		$this->load->language('common/home');
+		$description = $this->config->get('config_description');
+		$language_id = $this->config->get('config_language_id');
 
-		$this->document->setTitle($this->config->get('config_meta_title'));
-		$this->document->setDescription($this->config->get('config_meta_description'));
-		$this->document->setKeywords($this->config->get('config_meta_keyword'));
-
-		// Зареждане на products модел
-		$this->load->model('catalog/product');
-
-		// Вземане на продукти
-		$filter_data = [
-			'start' => 0,
-			'limit' => 6
-		];
-
-		$products = [];
-		$results = $this->model_catalog_product->getProducts($filter_data);
-
-		foreach ($results as $result) {
-			$products[] = [
-				'product_id' => $result['product_id'],
-				'name' => $result['name'],
-				'price' => $this->currency->format($result['price'], $this->session->data['currency'])
-			];
+		if (isset($description[$language_id])) {
+			$this->document->setTitle($description[$language_id]['meta_title']);
+			$this->document->setDescription($description[$language_id]['meta_description']);
+			$this->document->setKeywords($description[$language_id]['meta_keyword']);
 		}
 
-		// Inertia render
-		$data = [
-			'store_name' => $this->config->get('config_name'),
-			'product_count' => count($products),
-			'products' => $products
-		];
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['column_right'] = $this->load->controller('common/column_right');
+		$data['content_top'] = $this->load->controller('common/content_top');
+		$data['content_bottom'] = $this->load->controller('common/content_bottom');
+		$data['footer'] = $this->load->controller('common/footer');
+		$data['header'] = $this->load->controller('common/header');
 
-		$output = $this->inertia->render('Home/Index', $data);
-
-		$this->response->setOutput($output);
+		$this->response->setOutput($this->load->view('common/home', $data));
 	}
 }
